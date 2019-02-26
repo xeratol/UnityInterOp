@@ -42,18 +42,14 @@ extern "C"
     }
 
     // arr is a pre-allocated int[] with at least length n
-    DllExport void GetDynamicSizeArray(int arr[], const int n)
+    DllExport int GetSum(const int arr[], const int n)
     {
+        int sum = 0;
         for (auto i = 0; i < n; ++i)
         {
-            arr[i] = i + 1;
+            sum += arr[i];
         }
-    }
-
-    // arr is a pre-allocated int[] with at least length 10
-    DllExport void GetFixedSizeArray(int arr[])
-    {
-        GetDynamicSizeArray(arr, 10);
+        return sum;
     }
 
     DllExport const char* GetString()
@@ -73,9 +69,11 @@ extern "C"
         v->y = 3.0f;
     }
 
-    // Note: In C, there's no reference operator (&)
-    // hence, we don't have a pass-by-reference
-    // no GetVec2Ref(Vec2& v)
+    DllExport void GetVec2Ref(Vec2& v)
+    {
+        v.x = 4.0f;
+        v.y = 5.0f;
+    }
 
     // arr is a pre-allocated Vec2[] with at least length n
     DllExport void GetVec2Arr(Vec2 arr[], const int n)
@@ -87,21 +85,36 @@ extern "C"
         }
     }
 
-    struct Line
+    struct LineSegment
+    {
+        Vec2 start;
+        Vec2* end; // just for demonstration
+    };
+
+    // line must be pre-allocated
+    DllExport void AssignLineSegment(LineSegment* const line)
+    {
+        line->start.x = 10.0f;
+        line->start.y = 20.0f;
+        line->end->x = 30.0f;
+        line->end->y = 40.0f;
+    }
+
+    struct LineSegments
     {
         Vec2* points = nullptr;
         int count = 0;
     };
 
     // use FreeLine to deallocate
-    DllExport void AllocLine(Line** const line, const int n)
+    DllExport void AllocLine(LineSegments** const line, const int n)
     {
         if ((*line) != nullptr)
         {
             return;
         }
 
-        (*line) = new Line();
+        (*line) = new LineSegments();
         (*line)->points = new Vec2[n];
         for (auto i = 0; i < n; ++i)
         {
@@ -111,12 +124,14 @@ extern "C"
     }
 
     // use AllocLine to allocate
-    DllExport void FreeLine(Line** const line)
+    DllExport void FreeLine(LineSegments** const line)
     {
         delete [] (*line)->points;
         delete (*line);
         (*line) = nullptr;
     }
+
+    // TODO Function Pointers
 
 #ifdef __cplusplus
 }
