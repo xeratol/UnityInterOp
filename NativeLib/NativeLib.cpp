@@ -1,48 +1,119 @@
 #define DllExport __declspec (dllexport)
 
+#include <cmath>
+
 #ifdef __cplusplus
 // Use C-based naming convention - No Name Mangling!
 extern "C"
 {
 #endif
 
-    DllExport bool GetBool()
+    DllExport bool GetBool(bool b)
     {
-        return true;
+        return !b;
     }
 
-    DllExport char GetChar()
+    DllExport void GetBoolPtr(bool* b)
     {
-        return 'c';
+        (*b) = !(*b);
     }
 
-    DllExport __int16 GetShort()
+    DllExport void GetBoolRef(bool& b)
     {
-        return 16;
+        b = !b;
     }
 
-    DllExport __int32 GetInt()
+    DllExport char GetChar(char c)
     {
-        return 42;
+        return c + 1;
     }
 
-    DllExport __int64 GetLong()
+    DllExport void GetCharPtr(char* c)
     {
-        return 9223372036854775807l; // 9223372036854775808 = 0x8000000000000000
+        (*c) += 1;
     }
 
-    DllExport float GetFloat()
+    DllExport void GetCharRef(char& c)
     {
-        return 0.1528535047e6f;
+        c += 1;
     }
 
-    DllExport double GetDouble()
+    DllExport __int16 GetShort(__int16 s)
     {
-        return 0.1528535047e6;
+        return s + 1;
     }
 
-    // arr is a pre-allocated int[] with at least length n
-    DllExport int GetSum(const int arr[], const int n)
+    DllExport void GetShortPtr(__int16* s)
+    {
+        (*s) += 1;
+    }
+
+    DllExport void GetShortRef(__int16& s)
+    {
+        s += 1;
+    }
+
+    DllExport __int32 GetInt(__int32 i)
+    {
+        return i + 42;
+    }
+
+    DllExport void GetIntPtr(__int32* i)
+    {
+        (*i) += 42;
+    }
+
+    DllExport void GetIntRef(__int32& i)
+    {
+        i += 42;
+    }
+
+    DllExport __int64 GetLong(__int64 i)
+    {
+        return i * 10;
+    }
+
+    DllExport void GetLongPtr(__int64* i)
+    {
+        (*i) *= 10;
+    }
+
+    DllExport void GetLongRef(__int64& i)
+    {
+        i *= 10;
+    }
+
+    DllExport float GetFloat(float f)
+    {
+        return f / 9.0f;
+    }
+
+    DllExport void GetFloatPtr(float* f)
+    {
+        (*f) /= 9.0f;
+    }
+
+    DllExport void GetFloatRef(float& f)
+    {
+        f /= 9.0f;
+    }
+
+    DllExport double GetDouble(double d)
+    {
+        return d * 1e6;
+    }
+
+    DllExport void GetDoublePtr(double* d)
+    {
+        (*d) *= 1e6;
+    }
+
+    DllExport void GetDoubleRef(double& d)
+    {
+        d *= 1e6;
+    }
+
+    DllExport int GetIntArraySum(const int arr[], const int n)
     {
         int sum = 0;
         for (auto i = 0; i < n; ++i)
@@ -52,9 +123,29 @@ extern "C"
         return sum;
     }
 
-    DllExport const char* GetString()
+    DllExport const char* GetConstantString(int x)
     {
-        return "1.2.3";
+        switch (x)
+        {
+        case 0:
+            return "000";
+        case 1:
+            return "911";
+        case 2:
+            return "1.2.3";
+        default:
+            return "some string";
+        }
+    }
+
+    DllExport void GetStringReverse(char* const str, int length)
+    {
+        for (auto i = 0; i * 2 <= length - 1; ++i)
+        {
+            auto c = str[i];
+            str[i] = str[length - i - 1];
+            str[length - i - 1] = c;
+        }
     }
 
     struct Vec2
@@ -63,47 +154,73 @@ extern "C"
         float y = 0.0f;
     };
 
-    DllExport void GetVec2Ptr(Vec2* v)
+    DllExport Vec2 GetVec(Vec2 in)
     {
-        v->x = 2.0f;
-        v->y = 3.0f;
+        auto t = in.x;
+        in.x = in.y;
+        in.y = t;
+        return in;
     }
 
-    DllExport void GetVec2Ref(Vec2& v)
+    DllExport void GetVec2Ptr(Vec2* in)
     {
-        v.x = 4.0f;
-        v.y = 5.0f;
+        auto t = in->x;
+        in->x = in->y;
+        in->y = t;
+    }
+
+    DllExport void GetVec2Ref(Vec2& in)
+    {
+        auto t = in.x;
+        in.x = in.y;
+        in.y = t;
     }
 
     // arr is a pre-allocated Vec2[] with at least length n
-    DllExport void GetVec2Arr(Vec2 arr[], const int n)
+    DllExport Vec2 GetVecArraySum(const Vec2 arr[], const int n)
+    {
+        Vec2 sum;
+        for (auto i = 0; i < n; ++i)
+        {
+            sum.x += arr[i].x;
+            sum.y += arr[i].y;
+        }
+        return sum;
+    }
+
+    DllExport void SetVecArray(Vec2 arr[], const int n, const float v)
     {
         for (auto i = 0; i < n; ++i)
         {
-            arr[i].x = static_cast<float>(i + 1);
-            arr[i].y = i + 1.0f + n;
+            arr[i].x = v;
+            arr[i].y = v;
         }
+    }
+
+    DllExport float GetDistance(const Vec2& a, const Vec2& b)
+    {
+        auto x = b.x - a.x;
+        auto y = b.y - a.y;
+        auto xSq = x * x;
+        auto ySq = y * y;
+        return sqrtf(xSq + ySq);
     }
 
     struct LineSegment
     {
         Vec2 start;
-        Vec2* end; // just for demonstration
+        Vec2 end;
     };
 
-    // line must be pre-allocated
-    DllExport void AssignLineSegment(LineSegment* const line)
+    DllExport float GetLineSegmentLength(const LineSegment& line)
     {
-        line->start.x = 10.0f;
-        line->start.y = 20.0f;
-        line->end->x = 30.0f;
-        line->end->y = 40.0f;
+        return GetDistance(line.start, line.end);
     }
 
     struct LineSegments
     {
         Vec2* points = nullptr;
-        int count = 0;
+        int numPoints = 0;
     };
 
     // use FreeLine to deallocate
@@ -116,11 +233,17 @@ extern "C"
 
         (*line) = new LineSegments();
         (*line)->points = new Vec2[n];
-        for (auto i = 0; i < n; ++i)
+        (*line)->numPoints = n;
+    }
+
+    DllExport float GetLineSegmentsLength(const LineSegments& line)
+    {
+        float sum = 0;
+        for (auto i = 0; i < line.numPoints - 1; ++i)
         {
-            GetVec2Arr((*line)->points, n);
+            sum += GetDistance(line.points[i], line.points[i + 1]);
         }
-        (*line)->count = n;
+        return sum;
     }
 
     // use AllocLine to allocate
