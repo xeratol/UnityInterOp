@@ -3,7 +3,7 @@
 #include <cmath>
 
 #ifdef __cplusplus
-// Use C-based naming convention - No Name Mangling!
+// Use C-based naming convention - No name nangling (no overloading)
 extern "C"
 {
 #endif
@@ -23,6 +23,7 @@ extern "C"
         b = !b;
     }
 
+    // technically, a char is 8-bit unsigned int
     DllExport char GetChar(char c)
     {
         return c + 1;
@@ -38,17 +39,17 @@ extern "C"
         c += 1;
     }
 
-    DllExport __int16 GetShort(__int16 s)
+    DllExport short GetShort(short s)
     {
         return s + 1;
     }
 
-    DllExport void GetShortPtr(__int16* s)
+    DllExport void GetShortPtr(short* s)
     {
         (*s) += 1;
     }
 
-    DllExport void GetShortRef(__int16& s)
+    DllExport void GetShortRef(short& s)
     {
         s += 1;
     }
@@ -70,17 +71,17 @@ extern "C"
 
     DllExport __int64 GetLong(__int64 i)
     {
-        return i * 10;
+        return i * 10LL;
     }
 
     DllExport void GetLongPtr(__int64* i)
     {
-        (*i) *= 10;
+        (*i) *= 10LL;
     }
 
     DllExport void GetLongRef(__int64& i)
     {
-        i *= 10;
+        i *= 10LL;
     }
 
     DllExport float GetFloat(float f)
@@ -138,7 +139,19 @@ extern "C"
         }
     }
 
-    DllExport void GetStringReverse(char* const str, int length)
+    DllExport int GetStringLength(const char * str, int maxIndex = 255)
+    {
+        for (auto i = 0; i <= maxIndex; ++i)
+        {
+            if (str[i] == 0)
+            {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    DllExport void GetStringReverse(char* str, int length)
     {
         for (auto i = 0; i * 2 <= length - 1; ++i)
         {
@@ -147,6 +160,14 @@ extern "C"
             str[length - i - 1] = c;
         }
     }
+
+    /*
+        Struct with simple data types
+        Struct with struct
+        Struct with pointer to struct
+        Struct with fixed array of structs
+        Struct with dynamic array of structs
+    */
 
     struct Vec2
     {
