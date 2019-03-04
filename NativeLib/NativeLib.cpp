@@ -39,6 +39,16 @@ extern "C"
         c += 1;
     }
 
+    DllExport void GetCharArrRev(char arr[], const int n)
+    {
+        for (auto i = 0; i * 2 <= n - 1; ++i)
+        {
+            auto c = arr[i];
+            arr[i] = arr[n - i - 1];
+            arr[n - i - 1] = c;
+        }
+    }
+
     DllExport short GetShort(short s)
     {
         return s + 1;
@@ -114,6 +124,16 @@ extern "C"
         d *= 1e6;
     }
 
+    // arr is a pre-allocated integer array of size n
+    DllExport void GetIntArray(int arr[], const int n)
+    {
+        for (auto i = 0; i < n; ++i)
+        {
+            arr[i] = i + 1;
+        }
+    }
+
+    // arr is a pre-allocated integer array of size n
     DllExport int GetIntArraySum(const int arr[], const int n)
     {
         int sum = 0;
@@ -129,7 +149,7 @@ extern "C"
         switch (x)
         {
         case 0:
-            return "000";
+            return "007";
         case 1:
             return "911";
         case 2:

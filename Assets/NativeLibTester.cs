@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class NativeLibTester : MonoBehaviour
@@ -35,6 +35,16 @@ public class NativeLibTester : MonoBehaviour
             Debug.Assert(c == 'g', "NativeLib.GetCharRef()");
             NativeLib.GetCharRef(ref c);
             Debug.Assert(c == 'h', "NativeLib.GetCharRef()");
+
+            var arr = new char[] { 'a', 'b', 'c' };
+            var exp = new char[] { 'c', 'b', 'a' };
+            NativeLib.GetCharArrRev(arr);
+            Test("NativeLib.GetCharArrRev()", () => { return arr.SequenceEqual(exp); });
+
+            arr = new char[] { 'd', 'o', 'g', 'm', 'e', 'a', 't' };
+            exp = new char[] { 't', 'a', 'e', 'm', 'g', 'o', 'd' };
+            NativeLib.GetCharArrRev(arr);
+            Test("NativeLib.GetCharArrRev()", () => { return arr.SequenceEqual(exp); });
         }
 
         {
@@ -118,9 +128,29 @@ public class NativeLibTester : MonoBehaviour
         }
 
         {
+            var useAlt = NativeLib.useAlternate;
+            NativeLib.useAlternate = false;
             for (var i = 0; i < 100; ++i)
             {
-                var length = random.Next(1, 5);
+                if (i >= 50)
+                {
+                    NativeLib.useAlternate = true;
+                }
+                var length = random.Next(10, 50);
+                var arr = new int[length];
+                NativeLib.GetIntArray(arr);
+                for (var j = 0; j < length; ++j)
+                {
+                    Test("NativeLib.GetIntArray()", j + 1, arr[j]);
+                }
+            }
+            NativeLib.useAlternate = useAlt;
+        }
+
+        {
+            for (var i = 0; i < 100; ++i)
+            {
+                var length = random.Next(1, 50);
                 var arr = new int[length];
                 var sum = 0;
                 for (var j = 0; j < length; ++j)
@@ -133,16 +163,42 @@ public class NativeLibTester : MonoBehaviour
             }
         }
 
+        {
+            Test("NativeLib.GetConstantString()", "007", NativeLib.GetConstantString(0));
+            Test("NativeLib.GetConstantString()", "911", NativeLib.GetConstantString(1));
+            Test("NativeLib.GetConstantString()", "1.2.3", NativeLib.GetConstantString(2));
+            Test("NativeLib.GetConstantString()", "some string", NativeLib.GetConstantString(-1));
+        }
+
+        {
+            var s = "dummy";
+            Test("NativeLib.GetStringLength()", s.Length, NativeLib.GetStringLength(s));
+            s = "supercalifragilisticexpialidocious";
+            Test("NativeLib.GetStringLength()", s.Length, NativeLib.GetStringLength(s));
+            s = "The quick brown fox jumps over the lazy dog";
+            Test("NativeLib.GetStringLength()", s.Length, NativeLib.GetStringLength(s));
+        }
+
+        {
+
+        }
+
         Debug.Log("Test Complete");
+    }
+
+    private void Test(string function, Func<bool> checker)
+    {
+        if (!checker())
+        {
+            Debug.LogError(function);
+        }
     }
 
     private void Test<T>(string function, T expected, T output)
     {
-        Debug.Assert(expected.Equals(output), ErrorMessage(function, expected, output));
-    }
-
-    private string ErrorMessage<T>(string function, T expected, T output)
-    {
-        return string.Format("{0}: expected {1}, output {2}", function, expected, output);
+        if (!output.Equals(expected))
+        {
+            Debug.LogErrorFormat("{0}: expected {1}, output {2}", function, expected, output);
+        }
     }
 }

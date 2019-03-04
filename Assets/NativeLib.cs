@@ -2,8 +2,14 @@
 using System.Runtime.InteropServices;
 using System.Text;
 
+/*
+ * NativeLib class represents all the functions available in the NativeLib.dll.
+ * This class is purely in C# and can be used outside of Unity.
+ */
 public class NativeLib
 {
+    public static bool useAlternate = false;
+
     private class Wrapper
     {
         const string dll = "NativeLib";
@@ -30,6 +36,10 @@ public class NativeLib
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GetCharRef(ref byte c);
+
+        // character array, not necessarily a C-string
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GetCharArrRev(byte[] arr, int n);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
         public static extern short GetShort(short s);
@@ -75,6 +85,13 @@ public class NativeLib
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GetDoubleRef(ref double d);
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GetIntArray(int[] arr, int n);
+
+        // this is an alternate declaration for the same method above
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GetIntArray(ref int arr, int n);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
         public static extern int GetIntArraySum(int[] arr, int n);
@@ -129,6 +146,20 @@ public class NativeLib
         byte cb = Convert.ToByte(c);
         Wrapper.GetCharPtr(ref cb);
         c = Convert.ToChar(cb);
+    }
+
+    public static void GetCharArrRev(char[] arr)
+    {
+        var bArr = new byte[arr.Length];
+        for (var i = 0; i < arr.Length; ++i)
+        {
+            bArr[i] = Convert.ToByte(arr[i]);
+        }
+        Wrapper.GetCharArrRev(bArr, bArr.Length);
+        for (var i = 0; i < arr.Length; ++i)
+        {
+            arr[i] = Convert.ToChar(bArr[i]);
+        }
     }
 
     public static short GetShort(short s)
@@ -204,6 +235,18 @@ public class NativeLib
     public static void GetDoubleRef(ref double d)
     {
         Wrapper.GetDoubleRef(ref d);
+    }
+
+    public static void GetIntArray(int[] arr)
+    {
+        if (!useAlternate)
+        {
+            Wrapper.GetIntArray(arr, arr.Length);
+        }
+        else
+        {
+            Wrapper.GetIntArray(ref arr[0], arr.Length);
+        }
     }
 
     public static int GetIntArraySum(int [] arr)
