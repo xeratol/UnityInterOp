@@ -181,21 +181,41 @@ extern "C"
         }
     }
 
-    /*
-        Struct with simple data types
-        Struct with struct
-        Struct with pointer to struct
-        Struct with fixed array of structs
-        Struct with dynamic array of structs
-    */
-
+    // Struct with simple data types
     struct Vec2
     {
         float x = 0.0f;
         float y = 0.0f;
     };
 
-    DllExport Vec2 GetVec(Vec2 in)
+    // Struct with a struct
+    struct Line
+    {
+        Vec2 start;
+        Vec2 end;
+    };
+
+    // Struct with pointer to struct
+    struct LineWithPtrs
+    {
+        Vec2* start = nullptr;
+        Vec2* end = nullptr;
+    };
+
+    // Struct with fixed array of structs
+    struct Triangle
+    {
+        Vec2 edge[3];
+    };
+
+    // Struct with dynamic array of structs
+    struct Path
+    {
+        Vec2* edge;
+        int count;
+    };
+
+    DllExport Vec2 SwapCoords(Vec2 in)
     {
         auto t = in.x;
         in.x = in.y;
@@ -203,18 +223,27 @@ extern "C"
         return in;
     }
 
-    DllExport void GetVec2Ptr(Vec2* in)
+    DllExport void SwapCoordsPtr(Vec2* in)
     {
         auto t = in->x;
         in->x = in->y;
         in->y = t;
     }
 
-    DllExport void GetVec2Ref(Vec2& in)
+    DllExport void SwapCoordsRef(Vec2& in)
     {
         auto t = in.x;
         in.x = in.y;
         in.y = t;
+    }
+
+    DllExport void SetVecArray(Vec2 arr[], const int n, const float v)
+    {
+        for (auto i = 0; i < n; ++i)
+        {
+            arr[i].x = v;
+            arr[i].y = v;
+        }
     }
 
     // arr is a pre-allocated Vec2[] with at least length n
@@ -229,15 +258,6 @@ extern "C"
         return sum;
     }
 
-    DllExport void SetVecArray(Vec2 arr[], const int n, const float v)
-    {
-        for (auto i = 0; i < n; ++i)
-        {
-            arr[i].x = v;
-            arr[i].y = v;
-        }
-    }
-
     DllExport float GetDistance(const Vec2& a, const Vec2& b)
     {
         auto x = b.x - a.x;
@@ -247,54 +267,68 @@ extern "C"
         return sqrtf(xSq + ySq);
     }
 
-    struct LineSegment
-    {
-        Vec2 start;
-        Vec2 end;
-    };
-
-    DllExport float GetLineSegmentLength(const LineSegment& line)
+    DllExport float GetLineLength(const Line& line)
     {
         return GetDistance(line.start, line.end);
     }
 
-    struct LineSegments
+    DllExport void GetLineFromVecs(Line& line, const Vec2& start, const Vec2& end)
     {
-        Vec2* points = nullptr;
-        int numPoints = 0;
-    };
+        line.start = start;
+        line.end = end;
+    }
 
-    // use FreeLine to deallocate
-    DllExport void AllocLine(LineSegments** const line, const int n)
+    DllExport float GetLineWithPtrsLength(const LineWithPtrs& line)
     {
-        if ((*line) != nullptr)
+        return GetDistance(*(line.start), *(line.end));
+    }
+
+    // line.start and line.end should allocated prior
+    DllExport void GetLineWithPtrsFromVecs(LineWithPtrs& line, const Vec2& start, const Vec2& end)
+    {
+        *(line.start) = start;
+        *(line.end) = end;
+    }
+
+    DllExport float GetTriangleArea(const Triangle& triangle)
+    {
+        // Heron's Formula
+        const auto a = GetDistance(triangle.edge[0], triangle.edge[1]);
+        const auto b = GetDistance(triangle.edge[1], triangle.edge[2]);
+        const auto c = GetDistance(triangle.edge[2], triangle.edge[0]);
+        const auto s = (a + b + c) * 0.5f;
+        return sqrtf(s * (s - a) * (s - b) * (s - c));
+    }
+
+    DllExport void GetTriangleFromVecs(Triangle& triangle, const Vec2& a, const Vec2& b, const Vec2& c)
+    {
+        triangle.edge[0] = a;
+        triangle.edge[1] = b;
+        triangle.edge[2] = c;
+    }
+
+    DllExport float GetPathLength(const Path& path)
+    {
+        auto length = 0.0f;
+        for (auto i = 0; i < path.count - 1; ++i)
         {
-            return;
+            length += GetDistance(path.edge[i], path.edge[i + 1]);
         }
-
-        (*line) = new LineSegments();
-        (*line)->points = new Vec2[n];
-        (*line)->numPoints = n;
+        return length;
     }
 
-    DllExport float GetLineSegmentsLength(const LineSegments& line)
+    // path should be allocated prior
+    // points should be at least length n
+    DllExport void GetPathFromVecs(Path& path, const Vec2 points[], const int n)
     {
-        float sum = 0;
-        for (auto i = 0; i < line.numPoints - 1; ++i)
+        path.count = n;
+        for (auto i = 0; i < n; ++i)
         {
-            sum += GetDistance(line.points[i], line.points[i + 1]);
+            path.edge[i] = points[i];
         }
-        return sum;
     }
 
-    // use AllocLine to allocate
-    DllExport void FreeLine(LineSegments** const line)
-    {
-        delete [] (*line)->points;
-        delete (*line);
-        (*line) = nullptr;
-    }
-
+    // TODO Array of strings
     // TODO Function Pointers
 
 #ifdef __cplusplus
