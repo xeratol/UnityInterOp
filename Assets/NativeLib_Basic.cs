@@ -3,14 +3,17 @@ using System.Runtime.InteropServices;
 using System.Text;
 
 /*
- * NativeLib class represents all the functions available in the NativeLib.dll.
+ * NativeLib_Basic.cs (this file) shows the marshalling between C# and C++ for simple data 
+ * types (bool, char, short, int, long, float, double) passed by value, as a pointer, and
+ * by reference.
+ * 
  * This class is purely in C# and can be used outside of Unity.
  */
-public class NativeLib
+public partial class NativeLib
 {
     public static bool useAlternate = false;
 
-    private class Wrapper
+    private partial class Wrapper
     {
         const string dll = "NativeLib";
 
@@ -96,6 +99,10 @@ public class NativeLib
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
         public static extern int GetIntArraySum(int[] arr, int n);
 
+        // this is an alternate declaration for the same method above
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int GetIntArraySum(in int arr, int n);
+
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr GetConstantString(int selector);
 
@@ -104,14 +111,6 @@ public class NativeLib
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
         public static extern void GetStringReverse(StringBuilder str, int length);
-
-        struct Vec2
-        {
-            public float x;
-            public float y;
-        }
-
-        // TODO
     }
 
     public static bool GetBool(bool b)
@@ -251,7 +250,14 @@ public class NativeLib
 
     public static int GetIntArraySum(int [] arr)
     {
-        return Wrapper.GetIntArraySum(arr, arr.Length);
+        if (!useAlternate)
+        {
+            return Wrapper.GetIntArraySum(arr, arr.Length);
+        }
+        else
+        {
+            return Wrapper.GetIntArraySum(in arr[0], arr.Length);
+        }
     }
 
     public static string GetConstantString(int selector)

@@ -67,7 +67,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\NativeLib.cpp" />
+    <ClCompile Include="..\NativeLib_Basic.cpp" />
+    <ClCompile Include="..\NativeLib_Structs.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -15,7 +15,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\NativeLib.cpp">
+    <ClCompile Include="..\NativeLib_Basic.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\NativeLib_Structs.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

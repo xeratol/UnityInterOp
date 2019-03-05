@@ -136,6 +136,7 @@ public class NativeLibTester : MonoBehaviour
                 {
                     NativeLib.useAlternate = true;
                 }
+
                 var length = random.Next(10, 50);
                 var arr = new int[length];
                 NativeLib.GetIntArray(arr);
@@ -148,8 +149,15 @@ public class NativeLibTester : MonoBehaviour
         }
 
         {
+            var useAlt = NativeLib.useAlternate;
+            NativeLib.useAlternate = false;
             for (var i = 0; i < 100; ++i)
             {
+                if (i >= 50)
+                {
+                    NativeLib.useAlternate = true;
+                }
+
                 var length = random.Next(1, 50);
                 var arr = new int[length];
                 var sum = 0;
@@ -161,6 +169,7 @@ public class NativeLibTester : MonoBehaviour
                 }
                 Test("NativeLib.GetIntArraySum()", sum, NativeLib.GetIntArraySum(arr));
             }
+            NativeLib.useAlternate = useAlt;
         }
 
         {
@@ -177,10 +186,6 @@ public class NativeLibTester : MonoBehaviour
             Test("NativeLib.GetStringLength()", s.Length, NativeLib.GetStringLength(s));
             s = "The quick brown fox jumps over the lazy dog";
             Test("NativeLib.GetStringLength()", s.Length, NativeLib.GetStringLength(s));
-        }
-
-        {
-
         }
 
         Debug.Log("Test Complete");
