@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 
 /*
- * NativeLib_Basic.cs (this file) shows the marshalling between C# and C++ for simple data 
+ * NativeLibBasic.cs (this file) shows the marshalling between C# and C++ for simple data 
  * types (bool, char, short, int, long, float, double) passed by value, as a pointer, and
  * by reference.
  * 

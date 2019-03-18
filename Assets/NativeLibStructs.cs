@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 /*
- * NativeLib_Structs.cs (this file) shows the marshalling between C# and C++ for
+ * NativeLibStructs.cs (this file) shows the marshalling between C# and C++ for
  * structs with simple data type members,
  * structs with struct members,
  * structs with pointers to struct members,
@@ -20,6 +20,11 @@ public partial class NativeLib
     {
         public float x;
         public float y;
+
+        public override string ToString()
+        {
+            return string.Format("({0}, {1})", x, y);
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -129,27 +134,27 @@ public partial class NativeLib
         Wrapper.SwapCoordsRef(ref i);
     }
 
-    public static void SetVecArray(Vec2[] arr, int n, float v)
+    public static void SetVecArray(Vec2[] arr, float v)
     {
         if (!useAlternate)
         {
-            Wrapper.SetVecArray(arr, n, v);
+            Wrapper.SetVecArray(arr, arr.Length, v);
         }
         else
         {
-            Wrapper.SetVecArray(ref arr[0], n, v);
+            Wrapper.SetVecArray(ref arr[0], arr.Length, v);
         }
     }
 
-    public static Vec2 GetVecArraySum(Vec2[] arr, int n)
+    public static Vec2 GetVecArraySum(Vec2[] arr)
     {
         if (!useAlternate)
         {
-            return Wrapper.GetVecArraySum(arr, n);
+            return Wrapper.GetVecArraySum(arr, arr.Length);
         }
         else
         {
-            return Wrapper.GetVecArraySum(in arr[0], n);
+            return Wrapper.GetVecArraySum(in arr[0], arr.Length);
         }
     }
 

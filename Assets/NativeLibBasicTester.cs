@@ -2,7 +2,7 @@
 using System.Linq;
 using UnityEngine;
 
-public class NativeLibTester : MonoBehaviour
+public class NativeLibBasicTester : TesterBehavior
 {
     void Start()
     {
@@ -128,48 +128,40 @@ public class NativeLibTester : MonoBehaviour
         }
 
         {
-            var useAlt = NativeLib.useAlternate;
-            NativeLib.useAlternate = false;
-            for (var i = 0; i < 100; ++i)
+            Action testCase = () =>
             {
-                if (i >= 50)
+                for (var i = 0; i < 100; ++i)
                 {
-                    NativeLib.useAlternate = true;
+                    var length = random.Next(10, 50);
+                    var arr = new int[length];
+                    NativeLib.GetIntArray(arr);
+                    for (var j = 0; j < length; ++j)
+                    {
+                        Test("NativeLib.GetIntArray()", j + 1, arr[j]);
+                    }
                 }
-
-                var length = random.Next(10, 50);
-                var arr = new int[length];
-                NativeLib.GetIntArray(arr);
-                for (var j = 0; j < length; ++j)
-                {
-                    Test("NativeLib.GetIntArray()", j + 1, arr[j]);
-                }
-            }
-            NativeLib.useAlternate = useAlt;
+            };
+            TestWithAlternate(testCase);
         }
 
         {
-            var useAlt = NativeLib.useAlternate;
-            NativeLib.useAlternate = false;
-            for (var i = 0; i < 100; ++i)
+            Action testCase = () =>
             {
-                if (i >= 50)
+                for (var i = 0; i < 100; ++i)
                 {
-                    NativeLib.useAlternate = true;
+                    var length = random.Next(1, 50);
+                    var arr = new int[length];
+                    var sum = 0;
+                    for (var j = 0; j < length; ++j)
+                    {
+                        var val = random.Next(-10000, 10000);
+                        arr[j] = val;
+                        sum += val;
+                    }
+                    Test("NativeLib.GetIntArraySum()", sum, NativeLib.GetIntArraySum(arr));
                 }
-
-                var length = random.Next(1, 50);
-                var arr = new int[length];
-                var sum = 0;
-                for (var j = 0; j < length; ++j)
-                {
-                    var val = random.Next(-10000, 10000);
-                    arr[j] = val;
-                    sum += val;
-                }
-                Test("NativeLib.GetIntArraySum()", sum, NativeLib.GetIntArraySum(arr));
-            }
-            NativeLib.useAlternate = useAlt;
+            };
+            TestWithAlternate(testCase);
         }
 
         {
@@ -189,21 +181,5 @@ public class NativeLibTester : MonoBehaviour
         }
 
         Debug.Log("Test Complete");
-    }
-
-    private void Test(string function, Func<bool> checker)
-    {
-        if (!checker())
-        {
-            Debug.LogError(function);
-        }
-    }
-
-    private void Test<T>(string function, T expected, T output)
-    {
-        if (!output.Equals(expected))
-        {
-            Debug.LogErrorFormat("{0}: expected {1}, output {2}", function, expected, output);
-        }
     }
 }

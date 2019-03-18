@@ -15,14 +15,14 @@ extern "C"
         float y = 0.0f;
     };
 
-    // Struct with a struct
+    // Struct with structs
     struct Line
     {
         Vec2 start;
         Vec2 end;
     };
 
-    // Struct with pointer to struct
+    // Struct with pointers to struct
     struct LineWithPtrs
     {
         Vec2* start = nullptr;
@@ -38,7 +38,7 @@ extern "C"
     // Struct with dynamic array of structs
     struct Path
     {
-        Vec2* edge;
+        Vec2* edge = nullptr;
         int count;
     };
 
