@@ -1,16 +1,16 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class NativeLibStructsTester : TesterBehavior
 {
+    private const int NUM_TESTS = 1000;
+
     void Start()
     {
         var random = new System.Random();
 
         {
-            for (var i = 0; i < 1000; ++i)
+            for (var i = 0; i < NUM_TESTS; ++i)
             {
                 var a = new NativeLib.Vec2();
                 a.x = (float)random.NextDouble();
@@ -34,7 +34,7 @@ public class NativeLibStructsTester : TesterBehavior
         {
             Action testCase = () =>
             {
-                for (var i = 0; i < 100; ++i)
+                for (var i = 0; i < NUM_TESTS; ++i)
                 {
                     var vecArr = new NativeLib.Vec2[random.Next(2, 10)];
                     var val = (float)random.NextDouble();
@@ -54,7 +54,7 @@ public class NativeLibStructsTester : TesterBehavior
         {
             Action testCase = () =>
             {
-                for (var i = 0; i < 100; ++i)
+                for (var i = 0; i < NUM_TESTS; ++i)
                 {
                     var vecArr = new NativeLib.Vec2[random.Next(2, 10)];
                     var sum = new NativeLib.Vec2();
@@ -76,7 +76,7 @@ public class NativeLibStructsTester : TesterBehavior
         }
 
         {
-            for (var i = 0; i < 100; ++i)
+            for (var i = 0; i < NUM_TESTS; ++i)
             {
                 var a = new NativeLib.Vec2();
                 a.x = (float)random.NextDouble();
@@ -99,7 +99,7 @@ public class NativeLibStructsTester : TesterBehavior
         }
 
         {
-            for (var i = 0; i < 100; ++i)
+            for (var i = 0; i < NUM_TESTS; ++i)
             {
                 var line = new NativeLib.Line();
                 line.start.x = (float)random.NextDouble();
@@ -116,6 +116,90 @@ public class NativeLibStructsTester : TesterBehavior
             }
 
             LogComplete("NativeLib.GetLineLength()");
+        }
+
+        {
+            for (var i = 0; i < NUM_TESTS; ++i)
+            {
+                var a = new NativeLib.Vec2();
+                a.x = (float)random.NextDouble();
+                a.y = (float)random.NextDouble();
+                var b = new NativeLib.Vec2();
+                b.x = (float)random.NextDouble();
+                b.y = (float)random.NextDouble();
+
+                var line = new NativeLib.Line();
+                NativeLib.GetLineFromVecs(ref line, a, b);
+
+                Test("NativeLib.GetLineFromVecs()", line.start, a);
+                Test("NativeLib.GetLineFromVecs()", line.end, b);
+            }
+
+            LogComplete("NativeLib.GetLineFromVecs()");
+        }
+
+        {
+            for (var i = 0; i < NUM_TESTS; ++i)
+            {
+                var line = new NativeLib.Line();
+                line.start.x = (float)random.NextDouble();
+                line.start.y = (float)random.NextDouble();
+                line.end.x = (float)random.NextDouble();
+                line.end.y = (float)random.NextDouble();
+                var lineLength = NativeLib.GetLineWithPtrsLength(line);
+
+                var xDeltaSq = (line.start.x - line.end.x) * (line.start.x - line.end.x);
+                var yDeltaSq = (line.start.y - line.end.y) * (line.start.y - line.end.y);
+                var expLength = Mathf.Sqrt(xDeltaSq + yDeltaSq);
+
+                Test("NativeLib.GetLineWithPtrsLength()", expLength, lineLength);
+            }
+
+            LogComplete("NativeLib.GetLineWithPtrsLength()");
+        }
+
+        {
+            for (var i = 0; i < NUM_TESTS; ++i)
+            {
+                var a = new NativeLib.Vec2();
+                a.x = (float)random.NextDouble();
+                a.y = (float)random.NextDouble();
+                var b = new NativeLib.Vec2();
+                b.x = (float)random.NextDouble();
+                b.y = (float)random.NextDouble();
+
+                var line = new NativeLib.Line();
+                NativeLib.GetLineWithPtrsFromVecs(ref line, a, b);
+
+                Test("NativeLib.GetLineWithPtrsFromVecs()", line.start, a);
+                Test("NativeLib.GetLineWithPtrsFromVecs()", line.end, b);
+            }
+
+            LogComplete("NativeLib.GetLineWithPtrsFromVecs()");
+        }
+
+        {
+            for (var i = 0; i < NUM_TESTS; ++i)
+            {
+                var a = new NativeLib.Vec2();
+                a.x = (float)random.NextDouble();
+                a.y = (float)random.NextDouble();
+                var b = new NativeLib.Vec2();
+                b.x = (float)random.NextDouble();
+                b.y = (float)random.NextDouble();
+                var c = new NativeLib.Vec2();
+                c.x = (float)random.NextDouble();
+                c.y = (float)random.NextDouble();
+
+                var triangle = new NativeLib.Triangle();
+                NativeLib.GetTriangleFromVecs(ref triangle, a, b, c);
+
+                Test("NativeLib.GetTriangleFromVecs()", triangle.edge[0], a);
+                Test("NativeLib.GetTriangleFromVecs()", triangle.edge[1], b);
+                Test("NativeLib.GetTriangleFromVecs()", triangle.edge[2], c);
+            }
+
+            LogComplete("NativeLib.GetTriangleFromVecs()");
         }
 
         Debug.Log("Test Complete");
