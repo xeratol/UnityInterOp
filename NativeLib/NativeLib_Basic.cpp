@@ -182,7 +182,6 @@ extern "C"
     }
 
     // TODO Array of strings
-    // TODO Function Pointers
 
 #ifdef __cplusplus
 }
