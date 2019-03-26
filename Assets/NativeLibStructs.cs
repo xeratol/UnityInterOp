@@ -125,7 +125,7 @@ public partial class NativeLib
         public static extern void GetLineWithPtrsFromVecs(ref LineWithPtrs line, in Vec2 start, in Vec2 end);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
-        public static extern float GetTriangleArea(in Triangle triangle);
+        public static extern float GetTrianglePerimeter(in Triangle triangle);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GetTriangleFromVecs(ref Triangle triangle, in Vec2 a, in Vec2 b, in Vec2 c);
@@ -234,9 +234,9 @@ public partial class NativeLib
         }
     }
 
-    public static float GetTriangleArea(Triangle triangle)
+    public static float GetTrianglePerimeter(Triangle triangle)
     {
-        return Wrapper.GetTriangleArea(in triangle);
+        return Wrapper.GetTrianglePerimeter(in triangle);
     }
 
     public static void GetTriangleFromVecs(ref Triangle triangle, Vec2 a, Vec2 b, Vec2 c)
@@ -266,23 +266,24 @@ public partial class NativeLib
 
     public static void GetPathFromVecs(ref Path p, Vec2 [] arr)
     {
+        // Wrapper.GetPathFromVecs() requires that path should be pre-allocated
         var path = new Wrapper.Path();
-        path.count = p.count;
-        path.edge = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(Vec2)) * p.count); // new/malloc
+        path.count = 0;
+        path.edge = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(Vec2)) * arr.Length); // new/malloc
 
         Wrapper.GetPathFromVecs(ref path, arr, arr.Length);
 
+        p.count = path.count;
         if (p.edge == null || p.edge.Length < arr.Length)
         {
             p.edge = new Vec2[arr.Length];
         }
-        p.count = path.count;
 
         // copy from unmanaged to managed
         for (var i = 0; i < p.count; ++i)
         {
             var edgePtr = new IntPtr(path.edge.ToInt64() + i * Marshal.SizeOf(typeof(Vec2)));
-            Marshal.PtrToStructure(edgePtr, p.edge[i]);
+            p.edge[i] = Marshal.PtrToStructure<Vec2>(edgePtr);
         }
 
         Marshal.FreeHGlobal(path.edge); // delete/free

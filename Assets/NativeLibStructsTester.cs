@@ -181,6 +181,31 @@ public class NativeLibStructsTester : TesterBehavior
         {
             for (var i = 0; i < NUM_TESTS; ++i)
             {
+                var triangle = new NativeLib.Triangle();
+                triangle.edge = new NativeLib.Vec2[3];
+                for (var j = 0; j < 3; ++j)
+                {
+                    triangle.edge[j].x = (float)random.NextDouble();
+                    triangle.edge[j].y = (float)random.NextDouble();
+                }
+
+                var p = NativeLib.GetTrianglePerimeter(triangle);
+
+                // Heron's Formula
+                var a = NativeLib.GetDistance(triangle.edge[0], triangle.edge[1]);
+                var b = NativeLib.GetDistance(triangle.edge[1], triangle.edge[2]);
+                var c = NativeLib.GetDistance(triangle.edge[2], triangle.edge[0]);
+                var p2 = a + b + c;
+
+                Test("NativeLib.GetTrianglePerimeter()", p, p2);
+            }
+
+            LogComplete("NativeLib.GetTrianglePerimeter()");
+        }
+
+        {
+            for (var i = 0; i < NUM_TESTS; ++i)
+            {
                 var a = new NativeLib.Vec2();
                 a.x = (float)random.NextDouble();
                 a.y = (float)random.NextDouble();
@@ -200,6 +225,58 @@ public class NativeLibStructsTester : TesterBehavior
             }
 
             LogComplete("NativeLib.GetTriangleFromVecs()");
+        }
+
+        {
+            for (var i = 0; i < NUM_TESTS; ++i)
+            {
+                var p = new NativeLib.Path();
+                p.count = random.Next(2, 100);
+                p.edge = new NativeLib.Vec2[p.count];
+                for (var j = 0; j < p.count; ++j)
+                {
+                    var v = new NativeLib.Vec2();
+                    v.x = (float)random.NextDouble();
+                    v.y = (float)random.NextDouble();
+                    p.edge[j] = v;
+                }
+
+                var pathLength = NativeLib.GetPathLength(p);
+
+                var pathLength2 = 0.0f;
+                for (var j = 1; j < p.count; ++j)
+                {
+                    pathLength2 += NativeLib.GetDistance(p.edge[j - 1], p.edge[j]);
+                }
+
+                Test("NativeLib.GetPathLength()", pathLength, pathLength2);
+            }
+
+            LogComplete("NativeLib.GetPathLength()");
+        }
+
+        {
+            for (var i = 0; i < NUM_TESTS; ++i)
+            {
+                var count = random.Next(1, 100);
+                var vec = new NativeLib.Vec2[count];
+                for (var j = 0; j < vec.Length; ++j)
+                {
+                    vec[j] = new NativeLib.Vec2();
+                    vec[j].x = (float)random.NextDouble();
+                    vec[j].y = (float)random.NextDouble();
+                }
+
+                var path = new NativeLib.Path();
+                NativeLib.GetPathFromVecs(ref path, vec);
+
+                for (var j = 0; j < path.count; ++j)
+                {
+                    Test("NativeLib.GetPathFromVecs()", path.edge[j], vec[j]);
+                }
+            }
+
+            LogComplete("NativeLib.GetPathFromVecs()");
         }
 
         Debug.Log("Test Complete");

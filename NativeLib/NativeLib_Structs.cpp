@@ -117,21 +117,18 @@ extern "C"
         *(line.end) = end;
     }
 
-    DllExport float GetTriangleArea(const Triangle& triangle)
-    {
-        // Heron's Formula
-        const auto a = GetDistance(triangle.edge[0], triangle.edge[1]);
-        const auto b = GetDistance(triangle.edge[1], triangle.edge[2]);
-        const auto c = GetDistance(triangle.edge[2], triangle.edge[0]);
-        const auto s = (a + b + c) * 0.5f;
-        return sqrtf(s * (s - a) * (s - b) * (s - c));
-    }
-
     DllExport void GetTriangleFromVecs(Triangle& triangle, const Vec2& a, const Vec2& b, const Vec2& c)
     {
         triangle.edge[0] = a;
         triangle.edge[1] = b;
         triangle.edge[2] = c;
+    }
+
+    DllExport float GetTrianglePerimeter(const Triangle& triangle)
+    {
+        return GetDistance(triangle.edge[0], triangle.edge[1]) +
+            GetDistance(triangle.edge[1], triangle.edge[2]) +
+            GetDistance(triangle.edge[2], triangle.edge[0]);
     }
 
     DllExport float GetPathLength(const Path& path)
