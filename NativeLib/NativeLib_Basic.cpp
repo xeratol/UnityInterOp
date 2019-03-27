@@ -56,12 +56,12 @@ extern "C"
 
     DllExport void GetShortPtr(short* s)
     {
-        (*s) += 1;
+        (*s)++;
     }
 
     DllExport void GetShortRef(short& s)
     {
-        s += 1;
+        s++;
     }
 
     DllExport __int32 GetInt(__int32 i)
