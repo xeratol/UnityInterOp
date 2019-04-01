@@ -6,17 +6,23 @@ extern "C"
 {
 #endif
 
-    typedef void(*VoidCallback)(void);
-    typedef char(*CharCallback)(char);
-    typedef short(*ShortCallback)(short);
-    typedef int(*IntCallback)(int);
-    typedef long(*LongCallback)(long);
-    typedef float(*FloatCallback)(float);
-    typedef double(*DoubleCallback)(double);
+    typedef void(_stdcall *VoidCallback)(void);
+    typedef bool(_stdcall *BoolCallback)(bool);
+    typedef char(_stdcall *CharCallback)(char);
+    typedef short(_stdcall *ShortCallback)(short);
+    typedef int(_stdcall *IntCallback)(int);
+    typedef long(_stdcall *LongCallback)(long);
+    typedef float(_stdcall *FloatCallback)(float);
+    typedef double(_stdcall *DoubleCallback)(double);
 
     DllExport void ExecuteVoidCallback(VoidCallback callback)
     {
         callback();
+    }
+
+    DllExport bool ExecuteBoolCallback(BoolCallback callback, bool param)
+    {
+        return callback(param);
     }
 
     DllExport char ExecuteCharCallback(CharCallback callback, char param)
