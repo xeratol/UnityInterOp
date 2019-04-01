@@ -279,6 +279,6 @@ public class NativeLibStructsTester : TesterBehavior
             LogComplete("NativeLib.GetPathFromVecs()");
         }
 
-        Debug.Log("Test Complete");
+        Debug.Log("NativeLibStructsTester Test Complete");
     }
 }

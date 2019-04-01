@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class NativeLibBasicTester : TesterBehavior
 {
+    private const int NUM_TESTS = 1000;
+
     void Start()
     {
         var random = new System.Random();
@@ -48,7 +50,7 @@ public class NativeLibBasicTester : TesterBehavior
         }
 
         {
-            for (var i = 0; i < 1000; ++i)
+            for (var i = 0; i < NUM_TESTS; ++i)
             {
                 var val = (short)random.Next(short.MinValue + 1, short.MaxValue);
                 Test("NativeLib.GetShort()", val + 1, NativeLib.GetShort(val));
@@ -64,7 +66,7 @@ public class NativeLibBasicTester : TesterBehavior
         }
 
         {
-            for (var i = 0; i < 1000; ++i)
+            for (var i = 0; i < NUM_TESTS; ++i)
             {
                 var val = random.Next(int.MinValue, int.MaxValue - 42);
                 Test("NativeLib.GetInt()", val + 42, NativeLib.GetInt(val));
@@ -80,7 +82,7 @@ public class NativeLibBasicTester : TesterBehavior
         }
 
         {
-            for (var i = 0; i < 1000; ++i)
+            for (var i = 0; i < NUM_TESTS; ++i)
             {
                 var val = random.Next(int.MaxValue / 100, int.MaxValue) * 10000L;
                 Test("NativeLib.GetLong()", val * 10L, NativeLib.GetLong(val));
@@ -96,7 +98,7 @@ public class NativeLibBasicTester : TesterBehavior
         }
 
         {
-            for (var i = 0; i < 1000; ++i)
+            for (var i = 0; i < NUM_TESTS; ++i)
             {
                 var val = (float)random.NextDouble();
                 Test("NativeLib.GetFloat()", val / 9.0f, NativeLib.GetFloat(val));
@@ -112,7 +114,7 @@ public class NativeLibBasicTester : TesterBehavior
         }
 
         {
-            for (var i = 0; i < 1000; ++i)
+            for (var i = 0; i < NUM_TESTS; ++i)
             {
                 var val = random.NextDouble();
                 Test("NativeLib.GetDouble()", val * 1e6, NativeLib.GetDouble(val));
@@ -130,7 +132,7 @@ public class NativeLibBasicTester : TesterBehavior
         {
             Action testCase = () =>
             {
-                for (var i = 0; i < 100; ++i)
+                for (var i = 0; i < NUM_TESTS; ++i)
                 {
                     var length = random.Next(10, 50);
                     var arr = new int[length];
@@ -147,7 +149,7 @@ public class NativeLibBasicTester : TesterBehavior
         {
             Action testCase = () =>
             {
-                for (var i = 0; i < 100; ++i)
+                for (var i = 0; i < NUM_TESTS; ++i)
                 {
                     var length = random.Next(1, 50);
                     var arr = new int[length];
@@ -180,6 +182,6 @@ public class NativeLibBasicTester : TesterBehavior
             Test("NativeLib.GetStringLength()", s.Length, NativeLib.GetStringLength(s));
         }
 
-        Debug.Log("Test Complete");
+        Debug.Log("NativeLibBasicTester Test Complete");
     }
 }
