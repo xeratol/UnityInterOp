@@ -1,46 +1,15 @@
-#define DllExport __declspec (dllexport)
-
 #include <cmath>
+#include <cstring>
+#include <algorithm>
+
+#include "Common.h"
+#include "Structs.h"
 
 #ifdef __cplusplus
 // Use C-based naming convention - No name nangling (no overloading)
 extern "C"
 {
 #endif
-
-    // Struct with simple data types
-    struct Vec2
-    {
-        float x = 0.0f;
-        float y = 0.0f;
-    };
-
-    // Struct with structs
-    struct Line
-    {
-        Vec2 start;
-        Vec2 end;
-    };
-
-    // Struct with pointers to struct
-    struct LineWithPtrs
-    {
-        Vec2* start = nullptr;
-        Vec2* end = nullptr;
-    };
-
-    // Struct with fixed array of structs
-    struct Triangle
-    {
-        Vec2 edge[3];
-    };
-
-    // Struct with dynamic array of structs
-    struct Path
-    {
-        Vec2* edge = nullptr;
-        int count;
-    };
 
     DllExport Vec2 SwapCoords(Vec2 in)
     {

@@ -1,6 +1,4 @@
-#define DllExport __declspec (dllexport)
-
-#include <cmath>
+#include "Common.h"
 
 #ifdef __cplusplus
 // Use C-based naming convention - No name nangling (no overloading)

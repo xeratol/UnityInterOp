@@ -1,19 +1,15 @@
-#define DllExport __declspec (dllexport)
+#include <thread>
+#include <chrono>
+
+#include "Common.h"
+#include "Structs.h"
+#include "Callbacks.h"
 
 #ifdef __cplusplus
 // Use C-based naming convention - No name nangling (no overloading)
 extern "C"
 {
 #endif
-
-    typedef void(_stdcall *VoidCallback)(void);
-    typedef bool(_stdcall *BoolCallback)(bool);
-    typedef char(_stdcall *CharCallback)(char);
-    typedef short(_stdcall *ShortCallback)(short);
-    typedef int(_stdcall *IntCallback)(int);
-    typedef long(_stdcall *LongCallback)(long);
-    typedef float(_stdcall *FloatCallback)(float);
-    typedef double(_stdcall *DoubleCallback)(double);
 
     DllExport void ExecuteVoidCallback(VoidCallback callback)
     {
@@ -60,6 +56,16 @@ extern "C"
         return callback[index](parameter);
     }
 
+    DllExport void ExecuteStringCallback(StringCallback callback, const char* str, int n)
+    {
+        callback(str, n);
+    }
+
+    DllExport void ExecuteStructCallback(StructCallback callback, const Vec2& v)
+    {
+        callback(v);
+    }
+
     static IntCallback storedCallback = nullptr;
 
     DllExport void StoreIntCallbackForLater(IntCallback callback)
@@ -98,9 +104,16 @@ extern "C"
         return (storedStructWithCallbacks.eventB == nullptr) ? -1 : storedStructWithCallbacks.eventB(param);
     }
 
-    // TODO Callbacks with arrays of simple data type parameters
-    // TODO Callbacks with string parameters
-    // TODO Callbacks with struct parameters
+    DllExport void ExecuteCallbackInThread(VoidCallback callback)
+    {
+        std::thread other([&]
+        {
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+            callback();
+        });
+
+        other.detach();
+    }
 
 #ifdef __cplusplus
 }
