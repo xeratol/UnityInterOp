@@ -3,12 +3,17 @@
 public partial class NativeLib
 {
     public delegate void VoidCallback();
-    public delegate byte CharCallback(char a);
+    [return: MarshalAs(UnmanagedType.I1)]
+    public delegate bool BoolCallback([MarshalAs(UnmanagedType.I1)] bool b);
+    public delegate byte ByteCallback(byte a); // char in C# is UTF-16, 2 bytes
     public delegate short ShortCallback(short a);
     public delegate int IntCallback(int a);
     public delegate long LongCallback(long a);
     public delegate float FloatCallback(float a);
     public delegate double DoubleCallback(double a);
+    //public delegate void StringCallback(string s);
+    //public delegate void StructCallback(in Vec2 v);
+    // StructWithCallbacks
 
     private partial class Wrapper
     {
@@ -16,16 +21,59 @@ public partial class NativeLib
         public static extern void ExecuteVoidCallback(VoidCallback callback);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool ExecuteBoolCallback(BoolCallback callback, [MarshalAs(UnmanagedType.I1)] bool b);
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
+        public static extern byte ExecuteCharCallback(ByteCallback callback, byte param);
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
         public static extern short ExecuteShortCallback(ShortCallback callback, short param);
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int ExecuteIntCallback(IntCallback callback, int param);
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
+        public static extern long ExecuteLongCallback(LongCallback callback, long param);
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
+        public static extern float ExecuteFloatCallback(FloatCallback callback, float param);
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
+        public static extern double ExecuteDoubleCallback(DoubleCallback callback, double param);
     }
 
-    public static void ExecuteVoidCallback(VoidCallback callback)
+    public static void ExecuteCallback(VoidCallback callback)
     {
         Wrapper.ExecuteVoidCallback(callback);
     }
 
-    public static short ExecuteShortCallback(ShortCallback callback, short param)
+    public static bool ExecuteCallback(BoolCallback callback, bool param)
+    {
+        return Wrapper.ExecuteBoolCallback(callback, param);
+    }
+
+    public static byte ExecuteCallback(ByteCallback callback, byte param)
+    {
+        return Wrapper.ExecuteCharCallback(callback, param);
+    }
+
+    public static short ExecuteCallback(ShortCallback callback, short param)
     {
         return Wrapper.ExecuteShortCallback(callback, param);
+    }
+
+    public static int ExecuteCallback(IntCallback callback, int param)
+    {
+        return Wrapper.ExecuteIntCallback(callback, param);
+    }
+
+    public static float ExecuteCallback(FloatCallback callback, float param)
+    {
+        return Wrapper.ExecuteFloatCallback(callback, param);
+    }
+
+    public static double ExecuteCallback(DoubleCallback callback, double param)
+    {
+        return Wrapper.ExecuteDoubleCallback(callback, param);
     }
 }
