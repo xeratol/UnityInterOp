@@ -122,7 +122,7 @@ extern "C"
         d *= 1e6;
     }
 
-    // arr is a pre-allocated integer array of size n
+    // arr is a pre-allocated integer array of size of at least n
     DllExport void GetIntArray(int arr[], const int n)
     {
         for (auto i = 0; i < n; ++i)
@@ -131,7 +131,7 @@ extern "C"
         }
     }
 
-    // arr is a pre-allocated integer array of size n
+    // arr is a pre-allocated integer array of size of at least n
     DllExport int GetIntArraySum(const int arr[], const int n)
     {
         int sum = 0;
@@ -157,7 +157,8 @@ extern "C"
         }
     }
 
-    DllExport int GetStringLength(const char * str, int maxIndex = 255)
+    // strlen(str) <= 255
+    DllExport int GetStringLength(const char* str, int maxIndex = 255)
     {
         for (auto i = 0; i <= maxIndex; ++i)
         {
@@ -169,6 +170,7 @@ extern "C"
         return -1;
     }
 
+    // strlen(str) >= length
     DllExport void GetStringReverse(char* str, int length)
     {
         for (auto i = 0; i * 2 <= length - 1; ++i)
