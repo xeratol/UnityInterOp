@@ -8,6 +8,13 @@ public class TesterBehavior : MonoBehaviour
         Debug.LogFormat("Test <color=green>{0}</color> complete", function);
     }
 
+    protected void LogFailedTest<T>(string function, T expected, T output)
+    {
+        Debug.LogErrorFormat(
+            "<color=red>{0}</color>: expected <b>{1}</b>, output <b>{2}</b>",
+            function, expected, output);
+    }
+
     protected void Test(string function, Func<bool> checker)
     {
         if (!checker())
@@ -20,7 +27,7 @@ public class TesterBehavior : MonoBehaviour
     {
         if (!output.Equals(expected))
         {
-            Debug.LogErrorFormat("{0}: expected {1}, output {2}", function, expected, output);
+            LogFailedTest(function, expected, output);
         }
     }
 
@@ -28,7 +35,7 @@ public class TesterBehavior : MonoBehaviour
     {
         if (!Mathf.Approximately(expected, output))
         {
-            Debug.LogErrorFormat("{0}: expected {1}, output {2}", function, expected, output);
+            LogFailedTest(function, expected, output);
         }
     }
 

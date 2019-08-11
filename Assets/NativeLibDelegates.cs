@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
 
 public partial class NativeLib
 {
@@ -11,8 +12,8 @@ public partial class NativeLib
     public delegate long LongCallback(long a);
     public delegate float FloatCallback(float a);
     public delegate double DoubleCallback(double a);
-    //public delegate void StringCallback(string s);
-    //public delegate void StructCallback(in Vec2 v);
+    public delegate void StringCallback(string s, int n);
+    public delegate void StructCallback(in Vec2 v);
     // StructWithCallbacks
 
     private partial class Wrapper
@@ -40,6 +41,15 @@ public partial class NativeLib
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
         public static extern double ExecuteDoubleCallback(DoubleCallback callback, double param);
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int ExecuteIntCallbackByIndex(IntPtr callbacks, int param, int index);
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        public static extern void ExecuteStringCallback(StringCallback callback, string s, int n);
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ExecuteStructCallback(StructCallback callback, in Vec2 v);
     }
 
     public static void ExecuteCallback(VoidCallback callback)
@@ -75,5 +85,31 @@ public partial class NativeLib
     public static double ExecuteCallback(DoubleCallback callback, double param)
     {
         return Wrapper.ExecuteDoubleCallback(callback, param);
+    }
+
+    public static int ExecuteCallback(IntCallback [] callbacks, int param, int index)
+    {
+        // C# has no default marshaling behavior for a delegate array
+        // need to do it manually
+        var callbackArray = new IntPtr();
+        callbackArray = Marshal.AllocHGlobal(callbacks.Length * IntPtr.Size);
+        for (var i = 0; i < callbacks.Length; ++i)
+        {
+            var ptr = callbackArray + i * IntPtr.Size;
+            Marshal.WriteIntPtr(ptr, Marshal.GetFunctionPointerForDelegate(callbacks[i]));
+        }
+        var val = Wrapper.ExecuteIntCallbackByIndex(callbackArray, param, index);
+        Marshal.FreeHGlobal(callbackArray);
+        return val;
+    }
+
+    public static void ExecuteCallback(StringCallback callback, string param)
+    {
+        Wrapper.ExecuteStringCallback(callback, param, param.Length);
+    }
+
+    public static void ExecuteCallback(StructCallback callback, in Vec2 v)
+    {
+        Wrapper.ExecuteStructCallback(callback, v);
     }
 }

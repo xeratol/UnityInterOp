@@ -6,6 +6,8 @@ public class NativeLibDelegatesTester : TesterBehavior
 {
     private const int NUM_TESTS = 1000;
     private bool _dummyBool = false;
+    private string _dummyString = "before";
+    private NativeLib.Vec2 _dummyVec2;
 
     void Start()
     {
@@ -60,7 +62,7 @@ public class NativeLibDelegatesTester : TesterBehavior
             for (var i = 0; i < NUM_TESTS; ++i)
             {
                 var intCallback = new NativeLib.IntCallback(DecrementInt);
-                var param = (int)random.Next();
+                var param = random.Next();
                 var val = NativeLib.ExecuteCallback(intCallback, param);
                 Test("NativeLib.ExecuteIntCallback()", DecrementInt(param), val);
             }
@@ -92,7 +94,56 @@ public class NativeLibDelegatesTester : TesterBehavior
             LogComplete("NativeLib.ExecuteDoubleCallback()");
         }
 
-        Debug.Log("NativeLibDelegatesTester Test Complete");
+        {
+            var callbacks = new NativeLib.IntCallback [] { DecrementInt, IncrementInt };
+            for (var i = 0; i < NUM_TESTS; ++i)
+            {
+                var param = random.Next();
+                var val = NativeLib.ExecuteCallback(callbacks, param, 0);
+                Test("NativeLib.ExecuteIntCallbackByIndex()", callbacks[0](param), val);
+            }
+
+            for (var i = 0; i < NUM_TESTS; ++i)
+            {
+                var param = random.Next();
+                var val = NativeLib.ExecuteCallback(callbacks, param, 1);
+                Test("NativeLib.ExecuteIntCallbackByIndex()", callbacks[1](param), val);
+            }
+
+            LogComplete("NativeLib.ExecuteIntCallbackByIndex()");
+        }
+
+        {
+            var callback = new NativeLib.StringCallback(SetDummyString);
+
+            NativeLib.ExecuteCallback(callback, "after");
+            Test("NativeLib.ExecuteStringCallback()", "after", _dummyString);
+
+            NativeLib.ExecuteCallback(callback, "aser3f@#$!3fsdrt");
+            Test("NativeLib.ExecuteStringCallback()", "aser3f@#$!3fsdrt", _dummyString);
+
+            NativeLib.ExecuteCallback(callback, "");
+            Test("NativeLib.ExecuteStringCallback()", "", _dummyString);
+
+            LogComplete("NativeLib.ExecuteStringCallback()");
+        }
+
+        {
+            var callback = new NativeLib.StructCallback(SetDummyVec2);
+            var newVec2 = new NativeLib.Vec2();
+
+            for (var i = 0; i < NUM_TESTS; ++i)
+            {
+                newVec2.x = random.Next();
+                newVec2.y = random.Next();
+                NativeLib.ExecuteCallback(callback, newVec2);
+                Test("NativeLib.ExecuteStructCallback()", newVec2, _dummyVec2);
+            }
+
+            LogComplete("NativeLib.ExecuteStructCallback()");
+        }
+
+        Debug.Log("<b>NativeLibDelegatesTester Test Complete</b>");
     }
 
     public void ToggleDummy()
@@ -120,6 +171,11 @@ public class NativeLibDelegatesTester : TesterBehavior
         return param - 1;
     }
 
+    public int IncrementInt(int param)
+    {
+        return param + 1;
+    }
+
     public float MultiplyByTwoFloat(float param)
     {
         return param * 2.0f;
@@ -128,5 +184,15 @@ public class NativeLibDelegatesTester : TesterBehavior
     public double MultiplyByTwoDouble(double param)
     {
         return param * 2.0;
+    }
+
+    public void SetDummyString(string s, int n)
+    {
+        _dummyString = s;
+    }
+
+    public void SetDummyVec2(in NativeLib.Vec2 v)
+    {
+        _dummyVec2 = v;
     }
 }
