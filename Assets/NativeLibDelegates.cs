@@ -50,6 +50,12 @@ public partial class NativeLib
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
         public static extern void ExecuteStructCallback(StructCallback callback, in Vec2 v);
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void StoreIntCallbackForLater(IntCallback callback);
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int ExecuteStoredIntCallback(int parameter);
     }
 
     public static void ExecuteCallback(VoidCallback callback)
@@ -111,5 +117,15 @@ public partial class NativeLib
     public static void ExecuteCallback(StructCallback callback, in Vec2 v)
     {
         Wrapper.ExecuteStructCallback(callback, v);
+    }
+
+    public static void StoreIntCallbackForLater(IntCallback callback)
+    {
+        Wrapper.StoreIntCallbackForLater(callback);
+    }
+
+    public static int ExecuteStoredIntCallback(int param)
+    {
+        return Wrapper.ExecuteStoredIntCallback(param);
     }
 }

@@ -143,6 +143,37 @@ public class NativeLibDelegatesTester : TesterBehavior
             LogComplete("NativeLib.ExecuteStructCallback()");
         }
 
+        {
+            var callback1 = new NativeLib.IntCallback(DecrementInt);
+            var callback2 = new NativeLib.IntCallback(IncrementInt);
+
+            NativeLib.StoreIntCallbackForLater(callback1);
+            for (var i = 0; i < NUM_TESTS; ++i)
+            {
+                var param = random.Next();
+                var val = NativeLib.ExecuteStoredIntCallback(param);
+                Test("NativeLib.ExecuteStoredIntCallback()", callback1(param), val);
+            }
+
+            NativeLib.StoreIntCallbackForLater(callback2);
+            for (var i = 0; i < NUM_TESTS; ++i)
+            {
+                var param = random.Next();
+                var val = NativeLib.ExecuteStoredIntCallback(param);
+                Test("NativeLib.ExecuteStoredIntCallback()", callback2(param), val);
+            }
+
+            NativeLib.StoreIntCallbackForLater(null);
+            for (var i = 0; i < NUM_TESTS; ++i)
+            {
+                var val = NativeLib.ExecuteStoredIntCallback(random.Next());
+                Test("NativeLib.ExecuteStoredIntCallback()", -1, val);
+            }
+
+            //LogComplete("NativeLib.StoreIntCallbackForLater()");
+            LogComplete("NativeLib.ExecuteStoredIntCallback()");
+        }
+
         Debug.Log("<b>NativeLibDelegatesTester Test Complete</b>");
     }
 
