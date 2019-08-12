@@ -25,7 +25,8 @@ public class TesterBehavior : MonoBehaviour
     {
         if (!checker())
         {
-            Debug.LogError(function);
+            Debug.LogErrorFormat("Failed <color=red>{0}</color>", function);
+            _success = false;
         }
     }
 
