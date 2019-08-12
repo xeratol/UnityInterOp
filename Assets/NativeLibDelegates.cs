@@ -71,6 +71,9 @@ public partial class NativeLib
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
         public static extern int ExecuteStoredStructWithCallbacksEventB(int param);
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ExecuteCallbackInThread(VoidCallback callback);
     }
 
     public static void ExecuteCallback(VoidCallback callback)
@@ -157,5 +160,10 @@ public partial class NativeLib
     public static int ExecuteStoredStructWithCallbacksEventB(int param)
     {
         return Wrapper.ExecuteStoredStructWithCallbacksEventB(param);
+    }
+
+    public static void ExecuteCallbackInThread(VoidCallback callback)
+    {
+        Wrapper.ExecuteCallbackInThread(callback);
     }
 }

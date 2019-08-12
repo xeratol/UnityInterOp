@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class NativeLibDelegatesTester : TesterBehavior
@@ -8,8 +7,10 @@ public class NativeLibDelegatesTester : TesterBehavior
     private bool _dummyBool = false;
     private string _dummyString = "before";
     private NativeLib.Vec2 _dummyVec2;
+    private bool _dummySynchronizingBool = false;
+    private static readonly object _synchronizationObject = new object();
 
-    void Start()
+    IEnumerator Start()
     {
         var random = new System.Random();
 
@@ -211,6 +212,32 @@ public class NativeLibDelegatesTester : TesterBehavior
                 "NativeLib.ExecuteStoredStructWithCallbacksEventB()");
         }
 
+        {
+            _dummySynchronizingBool = false;
+            var callback = new NativeLib.VoidCallback(ToggleSynchronizingBool);
+            NativeLib.ExecuteCallbackInThread(callback);
+
+            var timeStart = Time.time;
+            var timeOutSeconds = 5.0f;
+            while (Time.time < timeStart + timeOutSeconds) // blocking execution
+            {
+                var val = false;
+                lock(_synchronizationObject)
+                {
+                    val = _dummySynchronizingBool;
+                }
+                if (val)
+                {
+                    break;
+                }
+                yield return null;
+            }
+
+            Test("NativeLib.ExecuteCallbackInThread()", () => { return Time.time < timeStart + timeOutSeconds; });
+
+            LogComplete("NativeLib.ExecuteCallbackInThread()");
+        }
+
         Debug.Log("<b>NativeLibDelegatesTester Test Complete</b>");
     }
 
@@ -262,5 +289,13 @@ public class NativeLibDelegatesTester : TesterBehavior
     public void SetDummyVec2(in NativeLib.Vec2 v)
     {
         _dummyVec2 = v;
+    }
+
+    public void ToggleSynchronizingBool()
+    {
+        lock (_synchronizationObject)
+        {
+            _dummySynchronizingBool = !_dummySynchronizingBool;
+        }
     }
 }
