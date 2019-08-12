@@ -3,16 +3,22 @@ using UnityEngine;
 
 public class TesterBehavior : MonoBehaviour
 {
+    private bool _success = true;
+
     protected void LogComplete(string function)
     {
-        Debug.LogFormat("Test <color=green>{0}</color> complete", function);
+        Debug.LogFormat("Test <color={1}>{0}</color> complete",
+            function, _success ? "green" : "yellow");
+
+        _success = true;
     }
 
     protected void LogFailedTest<T>(string function, T expected, T output)
     {
         Debug.LogErrorFormat(
-            "<color=red>{0}</color>: expected <b>{1}</b>, output <b>{2}</b>",
+            "Failed <color=red>{0}</color>\nexpected <b>{1}</b>, output <b>{2}</b>",
             function, expected, output);
+        _success = false;
     }
 
     protected void Test(string function, Func<bool> checker)
