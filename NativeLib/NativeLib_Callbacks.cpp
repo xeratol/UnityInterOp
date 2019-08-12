@@ -108,8 +108,11 @@ extern "C"
     {
         std::thread other([&]
         {
+            // copy callback locally because parameter could get
+            // garbage collected by C#
+            auto callbackInThread = callback;
             std::this_thread::sleep_for(std::chrono::seconds(1));
-            callback();
+            callbackInThread();
         });
 
         other.detach();
