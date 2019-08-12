@@ -170,8 +170,45 @@ public class NativeLibDelegatesTester : TesterBehavior
                 Test("NativeLib.ExecuteStoredIntCallback()", -1, val);
             }
 
-            //LogComplete("NativeLib.StoreIntCallbackForLater()");
-            LogComplete("NativeLib.ExecuteStoredIntCallback()");
+            LogComplete("NativeLib.StoreIntCallbackForLater(),\n" +
+                "NativeLib.ExecuteStoredIntCallback()");
+        }
+
+        {
+            var structWithCallbacks = new NativeLib.StructWithCallbacks();
+            structWithCallbacks.eventA = IncrementInt;
+            structWithCallbacks.eventB = DecrementInt;
+
+            NativeLib.StoreStructWithCallbacksForLater(structWithCallbacks);
+            for (var i = 0; i < NUM_TESTS; ++i)
+            {
+                var param = random.Next();
+                var val = NativeLib.ExecuteStoredStructWithCallbacksEventA(param);
+                Test("NativeLib.ExecuteStoredStructWithCallbacksEventA()",
+                    structWithCallbacks.eventA(param), val);
+
+                val = NativeLib.ExecuteStoredStructWithCallbacksEventB(param);
+                Test("NativeLib.ExecuteStoredStructWithCallbacksEventB()",
+                    structWithCallbacks.eventB(param), val);
+            }
+
+            structWithCallbacks.eventA = null;
+            structWithCallbacks.eventB = null;
+            NativeLib.StoreStructWithCallbacksForLater(structWithCallbacks);
+            {
+                var param = random.Next();
+                var val = NativeLib.ExecuteStoredStructWithCallbacksEventA(param);
+                Test("NativeLib.ExecuteStoredStructWithCallbacksEventA()",
+                    -1, val);
+
+                val = NativeLib.ExecuteStoredStructWithCallbacksEventB(param);
+                Test("NativeLib.ExecuteStoredStructWithCallbacksEventB()",
+                    -1, val);
+            }
+
+            LogComplete("NativeLib.StoreStructWithCallbacksForLater(),\n" +
+                "NativeLib.ExecuteStoredStructWithCallbacksEventA(),\n" +
+                "NativeLib.ExecuteStoredStructWithCallbacksEventB()");
         }
 
         Debug.Log("<b>NativeLibDelegatesTester Test Complete</b>");

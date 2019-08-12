@@ -14,7 +14,13 @@ public partial class NativeLib
     public delegate double DoubleCallback(double a);
     public delegate void StringCallback(string s, int n);
     public delegate void StructCallback(in Vec2 v);
-    // StructWithCallbacks
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct StructWithCallbacks
+    {
+        public IntCallback eventA;
+        public IntCallback eventB;
+    }
 
     private partial class Wrapper
     {
@@ -56,6 +62,15 @@ public partial class NativeLib
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
         public static extern int ExecuteStoredIntCallback(int parameter);
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void StoreStructWithCallbacksForLater(in StructWithCallbacks callbacks);
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int ExecuteStoredStructWithCallbacksEventA(int param);
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int ExecuteStoredStructWithCallbacksEventB(int param);
     }
 
     public static void ExecuteCallback(VoidCallback callback)
@@ -127,5 +142,20 @@ public partial class NativeLib
     public static int ExecuteStoredIntCallback(int param)
     {
         return Wrapper.ExecuteStoredIntCallback(param);
+    }
+
+    public static void StoreStructWithCallbacksForLater(in StructWithCallbacks callbacks)
+    {
+        Wrapper.StoreStructWithCallbacksForLater(callbacks);
+    }
+
+    public static int ExecuteStoredStructWithCallbacksEventA(int param)
+    {
+        return Wrapper.ExecuteStoredStructWithCallbacksEventA(param);
+    }
+
+    public static int ExecuteStoredStructWithCallbacksEventB(int param)
+    {
+        return Wrapper.ExecuteStoredStructWithCallbacksEventB(param);
     }
 }
